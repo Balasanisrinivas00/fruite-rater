@@ -1,1 +1,1 @@
-# fruite-rater
+# fruit-rater

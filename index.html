@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruit Quality Classifier</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="/static/img/logo.svg" alt="Logo" class="logo" id="logo">
+                <h1>Fruit Quality</h1>
+            </div>
+            <div class="sidebar-content">
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li class="nav-item active" data-page="home">
+                            <i class="fas fa-home"></i>
+                            <span>Home</span>
+                        </li>
+                        <li class="nav-item" data-page="history">
+                            <i class="fas fa-history"></i>
+                            <span>History</span>
+                        </li>
+                        <li class="nav-item" data-page="about">
+                            <i class="fas fa-info-circle"></i>
+                            <span>About</span>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <img src="/static/img/avatar.svg" alt="User" class="user-avatar">
+                    <span class="username">Guest</span>
+                </div>
+                <button class="auth-button" id="authButton">Login</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">
+                    <h2>Fruit Quality Classifier</h2>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Home Page -->
+                <div class="page" id="homePage">
+                    <div class="welcome-message">
+                        <h3>Welcome to Fruit Quality Classifier</h3>
+                        <p>Upload or capture an image of a fruit to classify its quality as Good, Average, or Bad.</p>
+                    </div>
+
+                    <div class="upload-container">
+                        <div class="upload-methods">
+                            <button class="method-button active" data-method="upload">
+                                <i class="fas fa-upload"></i>
+                                <span>Upload Image</span>
+                            </button>
+                            <button class="method-button" data-method="webcam">
+                                <i class="fas fa-camera"></i>
+                                <span>Use Webcam</span>
+                            </button>
+                        </div>
+
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your fruit image here or click to browse</p>
+                                <span class="file-info">Supported formats: JPG, PNG, GIF</span>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                        </div>
+
+                        <div class="webcam-area" id="webcamArea" style="display: none;">
+                            <video id="webcamVideo" autoplay playsinline></video>
+                            <div class="webcam-controls">
+                                <button id="captureButton" class="capture-button">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Capture</span>
+                                </button>
+                                <button id="retakeButton" class="retake-button" style="display: none;">
+                                    <i class="fas fa-redo"></i>
+                                    <span>Retake</span>
+                                </button>
+                            </div>
+                            <canvas id="webcamCanvas" style="display: none;"></canvas>
+                        </div>
+
+                        <div class="upload-actions">
+                            <button id="classifyButton" class="classify-button" disabled>
+                                <i class="fas fa-magic"></i>
+                                <span>Classify Fruit</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="results-container" style="display: none;">
+                        <div class="results-header">
+                            <h3>Classification Results</h3>
+                            <button class="close-results">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="results-content">
+                            <div class="result-images">
+                                <div class="original-image">
+                                    <h4>Original Image</h4>
+                                    <img id="resultImage" src="" alt="Fruit Image">
+                                </div>
+                                <div class="heatmap-image">
+                                    <h4>Feature Heatmap</h4>
+                                    <img id="heatmapImage" src="" alt="Heatmap">
+                                </div>
+                            </div>
+                            <div class="result-details">
+                                <div class="quality-badge" id="qualityBadge">
+                                    <span class="quality-label">Good</span>
+                                    <span class="quality-confidence">95%</span>
+                                </div>
+                                <div class="confidence-bars">
+                                    <div class="confidence-item">
+                                        <span class="label">Good</span>
+                                        <div class="bar-container">
+                                            <div class="bar good" style="width: 95%;"></div>
+                                            <span class="value">95%</span>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-item">
+                                        <span class="label">Average</span>
+                                        <div class="bar-container">
+                                            <div class="bar average" style="width: 4%;"></div>
+                                            <span class="value">4%</span>
+                                        </div>
+                                    </div>
+                                    <div class="confidence-item">
+                                        <span class="label">Bad</span>
+                                        <div class="bar-container">
+                                            <div class="bar bad" style="width: 1%;"></div>
+                                            <span class="value">1%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="result-explanation">
+                                    <h4>What does this mean?</h4>
+                                    <p>This fruit appears to be of <strong>good quality</strong> with minimal defects. The model is highly confident in this classification.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Page -->
+                <div class="page" id="historyPage" style="display: none;">
+                    <div class="page-header">
+                        <h3>Prediction History</h3>
+                        <p>View your previous fruit quality classifications</p>
+                    </div>
+                    <div class="history-container">
+                        <div class="history-empty" style="display: none;">
+                            <i class="fas fa-history"></i>
+                            <p>No prediction history yet</p>
+                            <p>Your previous classifications will appear here</p>
+                        </div>
+                        <div class="history-list" id="historyList">
+                            <!-- History items will be added here dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Page -->
+                <div class="page" id="aboutPage" style="display: none;">
+                    <div class="page-header">
+                        <h3>About Fruit Quality Classifier</h3>
+                    </div>
+                    <div class="about-content">
+                        <div class="about-section">
+                            <h4>What is this application?</h4>
+                            <p>The Fruit Quality Classifier is an AI-powered application that uses computer vision and deep learning to analyze fruit images and classify them based on their visual quality.</p>
+                        </div>
+                        <div class="about-section">
+                            <h4>How does it work?</h4>
+                            <p>The application uses a Convolutional Neural Network (CNN) trained on thousands of fruit images to detect features like color, shape, spots, and bruises. It then classifies the fruit into one of three categories:</p>
+                            <ul>
+                                <li><strong>Good:</strong> Fruits with excellent appearance, no visible defects</li>
+                                <li><strong>Average:</strong> Fruits with minor defects or slight discoloration</li>
+                                <li><strong>Bad:</strong> Fruits with significant defects, bruising, or spoilage</li>
+                            </ul>
+                        </div>
+                        <div class="about-section">
+                            <h4>Technologies Used</h4>
+                            <ul>
+                                <li>Frontend: HTML, CSS, JavaScript</li>
+                                <li>Backend: Flask (Python)</li>
+                                <li>Machine Learning: TensorFlow, OpenCV</li>
+                                <li>Deployment: Cloud-based hosting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Login</h3>
+                <button class="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Login</button>
+                    <button class="auth-tab" data-tab="register">Register</button>
+                </div>
+                <div class="auth-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                    </div>
+                    <button class="auth-submit" id="loginSubmit">Login</button>
+                    <p class="auth-message" id="loginMessage"></p>
+                </div>
+                <div class="auth-form" id="registerForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" placeholder="Choose a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                    </div>
+                    <button class="auth-submit" id="registerSubmit">Register</button>
+                    <p class="auth-message" id="registerMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
